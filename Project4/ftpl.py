@@ -15,7 +15,7 @@ class FTPL_Player:
     
     def hallucinate(self, eps, num_actions):
         hallu = np.random.geometric(p=eps, size=num_actions) - 1
-        print(hallu)
+        # print(hallu)
         return hallu
 
     ## Get data set and return pay off
