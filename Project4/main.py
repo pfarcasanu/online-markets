@@ -2,6 +2,7 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from ew import EW_Player
+from ftpl import FTPL_Player
 
 class SecondPriceAuction:
   def __init__(self, n_rounds, k_actions, alg):
@@ -21,9 +22,9 @@ class SecondPriceAuction:
     revenues = np.empty((self.n, 1))
     prices = np.empty((self.n, 1))
     for i in range(self.n):
+      bids = sorted([f() for f in bidders])
       action = self.alg.get_action(payoffs[0:i, :])
       reserve_price = self.actions[action]
-      bids = sorted([f() for f in bidders])
 
       ## Calculate Revenue
       revenues[i] = self.get_revenue(bids, reserve_price)
@@ -38,14 +39,35 @@ class SecondPriceAuction:
 
 def part1():
   n_bidders = 2
-  n, k = 100, 10
-  auction = SecondPriceAuction(n, k, EW_Player)
-  rev, price = auction.play([random.random for i in range(n_bidders)])
+  n, k = 2500, 11
 
-  plt.clf()
-  plt.plot(range(n), rev)
-  plt.plot(range(n), price)
-  plt.savefig("./figures/SPA")
+  def run_experiment():
+    auction = SecondPriceAuction(n, k, FTPL_Player)
+    temp_rev, temp_price = auction.play([random.random for i in range(n_bidders)])
+
+    last10 = int(-n / 10)
+    return np.average(temp_rev[last10:]), np.average(temp_price[last10:])
+  
+  price, rev = [], []
+  for i in range(10):
+    temp_rev, temp_p = run_experiment()
+    rev.append(temp_rev)
+    price.append(temp_p)
+    
+  print ("Converged (last 1/10 of rounds) Averages")
+  print ("Average Price", np.average(price))
+  print ("Average Revenue", np.average(rev))
+
+  # plt.clf()
+  # run_avg_rev = [sum(rev[max(0, n_i-20):n_i + 1]) / len(rev[max(0, n_i-20):n_i + 1]) for n_i in range(n)]
+  # run_avg_price = [sum(price[max(0, n_i-20):n_i + 1]) / len(price[max(0, n_i-20):n_i + 1]) for n_i in range(n)]
+  # plt.plot(range(n), run_avg_rev, label="Revenue")
+  # plt.plot(range(n), run_avg_price, label="Reserve Price")
+  # plt.ylabel("Dollars")
+  # plt.xlabel("Round")
+  # plt.title("Second Price Auction")
+  # plt.legend()
+  # plt.savefig("./figures/part1_mov_avg.png")
 
 
 if __name__ == "__main__":
