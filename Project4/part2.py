@@ -31,7 +31,7 @@ class SellingIntroductions:
     ## Generate Once
     prices = list(np.linspace(0, 1, self.k))
     actions = list(set(permutations(prices + prices, len(bidders))))
-    alg = self.alg(self.n, len(actions), e=0.3)
+    alg = self.alg(self.n, len(actions), e=0.5)
     payoffs = np.empty((self.n, len(actions)))
     revenues = np.empty((self.n, 1))
     prices = [None] * self.n
@@ -59,8 +59,9 @@ def avg(lst):
   return [sum(lst[max(0, n-factor):n + 1]) / len(lst[max(0, n-factor):n + 1]) for n in range(n)]
 
 if __name__ == "__main__":
-  n, k = 1500, 9
-
+  n, k = 3000, 9
+  
+  '''
   # 0.9, 0.3
   introductions = SellingIntroductions(n, k, EW_Player)
   rev, price = introductions.play([Bidder(0.9), Bidder(0.3)])
@@ -115,10 +116,11 @@ if __name__ == "__main__":
   plt.legend(["val=0.2", "val=0.2"])
   plt.ylabel("Price Charged")
   plt.savefig("./figures/part2_low_low.png")
+  '''
 
   ## Multiple
   introductions = SellingIntroductions(n, k, EW_Player)
-  rev, price = introductions.play([Bidder(0.9), Bidder(0.3), Bidder(0.3)])
+  rev, price = introductions.play([Bidder(0.9), Bidder(0.2), Bidder(0.2)])
 
   plt.clf()
   plt.plot(range(n), avg(list(map(lambda x: x[0], price))))
