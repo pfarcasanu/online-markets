@@ -4,6 +4,10 @@ import math
 import matplotlib.pyplot as plt
 
 class UniDist:
+    def __init__(self):
+        self.price = 1/2
+        self.rev = 5/12
+
     def __str__(self):
         return "Uniform Distribution"
 
@@ -11,6 +15,10 @@ class UniDist:
         return random.random()
 
 class QuadDist:
+    def __init__(self):
+        self.price = 1 / math.sqrt(3)
+        self.rev = None
+        
     def __str__(self):
         return "Quadratic Distribution"
 
