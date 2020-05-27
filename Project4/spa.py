@@ -49,5 +49,6 @@ class SecondPriceAuction:
       ## Update Payoffs
       for update_i in range(self.k):
         update_price = self.actions[update_i]
+        payoffs[i, update_i] = self.get_revenue(bids, update_price)
 
     return revenues, prices

@@ -36,14 +36,14 @@ def part1():
   uni_d = UniDist()
   quad_d = QuadDist()
 
-  # ## Base Simulations
-  # n, trials = 1000, 100
-  # price, rev = np.array([]), []
-  # last10 = int(-n / 10)
-  # for _ in range(trials):
-  #   temp_rev, temp_p = run_experiment(dist_type=uni_d.random)
-  #   rev.append(np.mean(temp_rev[last10:]))
-  #   price = np.hstack((price, temp_p[:, 0]))
+  ## Base Simulations
+  n, trials = 1000, 100
+  price, rev = np.array([]), []
+  last10 = int(-n / 10)
+  for _ in range(trials):
+    temp_rev, temp_p = run_experiment(dist_type=uni_d.random)
+    rev.append(np.mean(temp_rev[last10:]))
+    price = np.hstack((price, temp_p[:, 0]))
 
   # print ("=========================================")
   # print ("Base Simulation")
@@ -53,8 +53,8 @@ def part1():
   # print ("=========================================\n")
 
   # ## How long to converge
-  # n_rounds = [50, 100, 250, 500, 1000, 2500, 5000, 10000]
-  n_rounds = np.logspace(2, 4, 30, dtype=int)
+  n_rounds = [50, 100, 250, 500, 1000, 2500, 5000, 10000]
+  # n_rounds = np.logspace(2, 5, 40, dtype=int)
   fins = []
   trials = 100
   for n in n_rounds:
@@ -67,66 +67,87 @@ def part1():
       price = np.hstack((price, temp_p[:, 0]))
       avg_p[trial]  = np.mean(temp_p[-20:])
 
-    avg_fin = np.mean(converg_time)
-    fins.append(avg_fin)
-    se_fin = np.std(converg_time, ddof=1) / math.sqrt(trials)
-    print ("=========================================")
-    print ("Total rounds {}".format(n))
-    print ("Average time to converge: {}".format(avg_fin))
-    # print ("% time to converge: {}".format(avg_fin / n))
-    # print ("SE of time to converge: {}".format(se_fin))
-    # print ("Mode Res Price: {}".format(round(stats.mode(price)[0][0], 2)))
-    # print ("Avg Converged Res Price:  {}".format(round(np.mean(avg_p), 4)))
-    # print ("Avg Revenue: {}".format(round(np.mean(avg_rev), 4)))
-    print ("=========================================\n")
+  #   avg_fin = np.mean(converg_time)
+  #   fins.append(avg_fin)
+  #   se_fin = np.std(converg_time, ddof=1) / math.sqrt(trials)
+  #   print ("=========================================")
+  #   print ("Total rounds {}".format(n))
+  #   print ("Average time to converge: {}".format(avg_fin))
+  #   print ("% time to converge: {}".format(avg_fin / n))
+  #   print ("SE of time to converge: {}".format(se_fin))
+  #   print ("Mode Res Price: {}".format(round(stats.mode(price)[0][0], 2)))
+  #   print ("Avg Converged Res Price:  {}".format(round(np.mean(avg_p), 4)))
+  #   print ("Avg Revenue: {}".format(round(np.mean(avg_rev), 4)))
+  #   print ("=========================================\n")
 
-  plt.clf()
-  plt.plot(n_rounds, fins)
-  plt.plot([0, n], [0, n])
-  plt.title("Num of Rounds to Convergence")
-  plt.xlabel("Total Ronds")
-  plt.ylabel("Num Rounds to Converge")
-  plt.xscale("log")
-  plt.yscale("log")
-  plt.savefig("./figures/round_converge")
+  # plt.clf()
+  # plt.plot(n_rounds, fins, label="Round for Convergence")
+  # plt.plot([0, n], [0, n], label="Linear Growth")
+  # plt.title("Num of Rounds to Convergence")
+  # plt.xlabel("Total Ronds")
+  # plt.ylabel("Num Rounds to Converge")
+  # plt.xscale("log")
+  # plt.yscale("log")
+  # plt.legend()
+  # plt.savefig("./figures/round_converge")
 
-  # ## Changing # Bidders
-  # n_bidders = [2, 4, 8, 16, 32, 50, 100]
-  # n, trials = 1000, 100
-  # last10 = int(-n / 10)
-  # for bidders in n_bidders:
-  #   avg_p, price, last10_rev, rev = np.empty((trials, 1)), np.array([]), np.empty((trials, 1)), np.array([])
-  #   for trial in range(trials):
-  #     # print ("Trial {}".format(trial))
-  #     temp_rev, temp_p = run_experiment(dist_type=uni_d.random, n_bidders=bidders)
-  #     rev = np.hstack((rev, temp_rev[:, 0]))
-  #     last10_rev[trial] = np.mean(temp_rev[last10:])
-  #     price = np.hstack((price, temp_p[:, 0]))
-  #     avg_p[trial]  = np.mean(temp_p[last10:])
+  ## Changing # Bidders
+  n_bidders = [2, 4, 8, 16, 32, 50, 100]
+  n, trials = 1000, 5
+  last10 = int(-n / 10)
+  prices = {}
+  sem = {}
+  for bidders in n_bidders:
+    sem[bidders] = []
+    prices[bidders] = np.empty((1, n))
+    avg_p, price, last10_rev, rev = np.empty((trials, 1)), np.array([]), np.empty((trials, 1)), np.array([])
+    for trial in range(trials):
+      temp_rev, temp_p = run_experiment(dist_type=uni_d.random, n_bidders=bidders)
+      rev = np.hstack((rev, temp_rev[:, 0]))
+      last10_rev[trial] = np.mean(temp_rev[last10:])
+      price = np.hstack((price, temp_p[:, 0]))
+      avg_p[trial]  = np.mean(temp_p[last10:])
+      prices[bidders] = np.vstack((prices[bidders], np.asarray([sum(price.tolist()[max(0, n_i-30):n_i + 1]) / len(price.tolist()[max(0, n_i-30):n_i + 1]) for n_i in range(n)])))
+      sem[bidders].append(stats.sem(price))
 
   #   print ("=========================================")
   #   print ("Num Bidders: {}".format(bidders))
   #   print ("Mode Res Price: {}".format(round(stats.mode(price)[0][0], 2)))
+  #   print ("SE Res Price: {}".format(round(stats.sem(price), 2)))
   #   print ("Avg Converged Res Price:  {}".format(round(np.mean(avg_p), 4)))
   #   print ("Avg Revenue: {}".format(round(np.mean(rev), 4)))
   #   print ("Avg Converged Revenue: {}".format(round(np.mean(last10_rev), 4)))
   #   print ("=========================================\n")
+  
+  # price_2 = np.mean(prices[2][1:, :], axis=0).reshape(-1, 1)
+  # price_16 = np.mean(prices[16][1:, :], axis=0).reshape(-1, 1)
+  # price_100 = np.mean(prices[100][1:, :], axis=0).reshape(-1, 1)
 
-  ## Different Distributions
+  # plt.clf()
+  # plt.plot(range(n), price_2, label="b=2 se: {}".format(round(np.mean(sem[2]), 4)))
+  # plt.plot(range(n), price_16, label="b=16")
+  # plt.plot(range(n), price_100, label="b=100 se: {}".format(round(np.mean(sem[100]), 4)))
+  # plt.xlabel("Round")
+  # plt.ylabel("Reserve Price")
+  # plt.title("Number of Bidders v Reserve Price")
+  # plt.legend()
+  # plt.savefig("./figures/bidders_price")
+
+  # Different Distributions
   # expected reserved price of quad is .578
-  # n, k, trials = 1000, 15, 1
-  # dists = [quad_d, uni_d]
-  # last10 = int(-n / 10)
-  # for dist_type in dists:
-  #   avg_p, price, rev, last10_rev = np.empty((trials, 1)), [], [], np.empty((trials, 1))
-  #   print ("Working with", str(dist_type))
-  #   for trial in range(trials):
-  #     # print ("Trial {}".format(trial))
-  #     temp_rev, temp_p = run_experiment(dist_type=dist_type.random, k=k)
-  #     rev = np.hstack((rev, temp_rev[:, 0]))
-  #     last10_rev[trial] = np.mean(temp_rev[last10:])
-  #     avg_p[trial] = np.mean(temp_p[last10:])
-  #     price = np.hstack((price, temp_p[:, 0]))
+  n, k, trials = 1000, 15, 1
+  dists = [quad_d, uni_d]
+  last10 = int(-n / 10)
+  for dist_type in dists:
+    avg_p, price, rev, last10_rev = np.empty((trials, 1)), [], [], np.empty((trials, 1))
+    print ("Working with", str(dist_type))
+    for trial in range(trials):
+      # print ("Trial {}".format(trial))
+      temp_rev, temp_p = run_experiment(dist_type=dist_type.random, k=k)
+      rev = np.hstack((rev, temp_rev[:, 0]))
+      last10_rev[trial] = np.mean(temp_rev[last10:])
+      avg_p[trial] = np.mean(temp_p[last10:])
+      price = np.hstack((price, temp_p[:, 0]))
 
   #     graph_rev_price(rev, price, "Round", "Dollars", str(dist_type), rev_line=dist_type.rev, p_line=dist_type.price)
   #   print ("=========================================")
