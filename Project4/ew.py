@@ -16,7 +16,8 @@ class EW_Player:
         v_sum = 0
         if data.shape[0] > 0:
             v_sum = np.sum(data[:, k_i])
-        return (1 + eps) ** v_sum
+        result = (1 + eps) ** v_sum
+        return result
 
     def prob_actions(self, data, eps):
         k = np.shape(data)[1]
