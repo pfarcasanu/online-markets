@@ -124,6 +124,6 @@ if __name__ == "__main__":
   plt.plot(range(n), avg(list(map(lambda x: x[0], price))))
   plt.plot(range(n), avg(list(map(lambda x: x[1], price))))
   plt.plot(range(n), avg(list(map(lambda x: x[2], price))))
-  plt.legend(["val=0.7", "val=0.6", "val=0.4"])
+  plt.legend(["val=0.9", "val=0.3", "val=0.3"])
   plt.ylabel("Price Charged")
   plt.savefig("./figures/part2_multiple.png")
