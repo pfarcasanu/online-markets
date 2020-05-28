@@ -17,7 +17,7 @@ class UniDist:
 class QuadDist:
     def __init__(self):
         self.price = 1 / math.sqrt(3)
-        self.rev = math.sqrt(5/9)
+        self.rev = (4/9) * (1/math.sqrt(3) + math.sqrt(5/9))
         
     def __str__(self):
         return "Quadratic Distribution"
